@@ -7,4 +7,5 @@
 
 ## Pull Requests
 - PR titles always start with a capital letter
+- Keep descriptions short, no extended descriptions
 - Do not include summary or test plan blocks in the description
