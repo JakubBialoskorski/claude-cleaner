@@ -10,6 +10,8 @@ you mark any number of them for deletion before confirming.
 
 Pure Python standard library — no dependencies, no install step.
 
+![screenshot](demo/screenshot.png)
+
 ## Usage
 
 ```
