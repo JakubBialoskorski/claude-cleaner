@@ -26,8 +26,8 @@ Pure Python standard library — no dependencies to install.
 
 ## Install system-wide
 
-Copy it onto your `PATH` as `claude-cleaner` so you can just type
-`claude-cleaner` from anywhere.
+Copy it onto your `PATH` as `claude-cleaner`. For quick use, alias it in
+`.bashrc` or `.zshrc`: `alias cc="claude-cleaner"`.
 
 **macOS**
 
