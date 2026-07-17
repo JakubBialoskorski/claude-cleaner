@@ -3,7 +3,7 @@
 the ones you no longer want, via an interactive terminal checklist.
 
 Usage:
-    ./claude_cleaner.py [--claude-dir PATH] [--dry-run]
+    ./claude_cleaner.py [--claude-dir PATH]
 
 Keys in the list view:
     up/down, j/k   move cursor
@@ -377,8 +377,6 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--claude-dir", type=Path, default=Path.home() / ".claude",
                          help="Path to the Claude Code config dir (default: ~/.claude)")
-    parser.add_argument("--dry-run", action="store_true",
-                         help="Show what would be deleted without actually deleting")
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     args = parser.parse_args()
 
@@ -397,10 +395,6 @@ def main():
     freed = 0
     errors = []
     for s in marked:
-        if args.dry_run:
-            print(f"[dry-run] would delete {s.session_id}  ({Path(s.project).name}: {s.title})")
-            freed += s.size_bytes
-            continue
         try:
             delete_session(s)
             freed += s.size_bytes
@@ -408,8 +402,7 @@ def main():
         except OSError as e:
             errors.append((s, e))
 
-    verb = "Would free" if args.dry_run else "Freed"
-    print(f"\n{verb} {human_size(freed)} across {len(marked) - len(errors)} conversation(s).")
+    print(f"\nFreed {human_size(freed)} across {len(marked) - len(errors)} conversation(s).")
     if errors:
         print(f"{len(errors)} failed to delete:")
         for s, e in errors:
