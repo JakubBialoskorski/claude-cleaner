@@ -18,11 +18,10 @@ Pure Python standard library — no dependencies to install.
 ## Usage
 
 ```
-./claude_cleaner.py [--claude-dir PATH] [--dry-run]
+./claude_cleaner.py [--claude-dir PATH]
 ```
 
 - `--claude-dir PATH` — path to the Claude Code config dir (default: `~/.claude`)
-- `--dry-run` — show what would be deleted without deleting anything
 - `--version` — print the version and exit
 
 Marked conversations are highlighted in red; the confirmation dialog shows
