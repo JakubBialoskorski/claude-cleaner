@@ -24,6 +24,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Optional
 
+__version__ = "1.0.0"
+
 
 @dataclass
 class SessionInfo:
@@ -377,6 +379,7 @@ def main():
                          help="Path to the Claude Code config dir (default: ~/.claude)")
     parser.add_argument("--dry-run", action="store_true",
                          help="Show what would be deleted without actually deleting")
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     args = parser.parse_args()
 
     print("Scanning conversations...")
