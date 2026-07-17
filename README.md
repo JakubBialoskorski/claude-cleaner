@@ -24,10 +24,6 @@ Pure Python standard library — no dependencies to install.
 - `--claude-dir PATH` — path to the Claude Code config dir (default: `~/.claude`)
 - `--version` — print the version and exit
 
-Marked conversations are highlighted in red; the confirmation dialog shows
-the total count and disk space that will be freed. Controls are listed in
-the footer of the UI itself (see screenshot above).
-
 ## Install system-wide
 
 Copy it onto your `PATH` as `claude-cleaner` so you can just type
