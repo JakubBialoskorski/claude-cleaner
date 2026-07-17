@@ -1,7 +1,7 @@
 # claude-cleaner
 
 > As of Claude Code `2.1.212` (2026-07-17), the native CLI still has no
-> built-in way to delete conversations — hence this tool.
+> built-in way to delete conversations — hence this tool. Courtesy of Sonnet 5 high effort.
 
 A small terminal tool to list and delete Claude Code conversations — the
 sessions shown by the `/resume` command. Claude Code has no built-in way to
@@ -47,8 +47,7 @@ mkdir -p ~/.local/bin
 cp claude_cleaner.py ~/.local/bin/claude-cleaner
 ```
 
-(Make sure `~/.local/bin` is on your `PATH` — it is by default on most
-modern distros.)
+Make sure `~/.local/bin` is on your `PATH`.
 
 ## What gets deleted
 
