@@ -11,7 +11,7 @@ It scans `~/.claude/projects/*/*.jsonl` across all your projects, shows each
 conversation's project, title, last-modified time, and disk size, and lets
 you mark any number of them for deletion before confirming.
 
-Pure Python standard library — no dependencies, no install step.
+Pure Python standard library — no dependencies to install.
 
 ![screenshot](demo/screenshot.png)
 
@@ -25,20 +25,30 @@ Pure Python standard library — no dependencies, no install step.
 - `--dry-run` — show what would be deleted without deleting anything
 - `--version` — print the version and exit
 
-## Keys
-
-| Key           | Action                                            |
-|---------------|----------------------------------------------------|
-| `up`/`down`, `j`/`k` | move cursor                                |
-| `space`       | toggle mark on the current row                     |
-| `a`           | toggle mark on all currently visible rows          |
-| `/`           | filter by project or title (Enter to apply, Esc to clear) |
-| `s`           | cycle sort: date added → a-z → z-a                 |
-| `d`, `enter`  | delete marked conversations (asks for confirmation)|
-| `q`           | quit without changing anything                     |
-
 Marked conversations are highlighted in red; the confirmation dialog shows
-the total count and disk space that will be freed.
+the total count and disk space that will be freed. Controls are listed in
+the footer of the UI itself (see screenshot above).
+
+## Install system-wide
+
+Copy it onto your `PATH` as `claude-cleaner` so you can just type
+`claude-cleaner` from anywhere.
+
+**macOS**
+
+```
+sudo cp claude_cleaner.py /usr/local/bin/claude-cleaner
+```
+
+**Linux**
+
+```
+mkdir -p ~/.local/bin
+cp claude_cleaner.py ~/.local/bin/claude-cleaner
+```
+
+(Make sure `~/.local/bin` is on your `PATH` — it is by default on most
+modern distros.)
 
 ## What gets deleted
 
