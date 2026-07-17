@@ -42,7 +42,6 @@ sudo cp claude_cleaner.py /usr/local/bin/claude-cleaner
 **Linux**
 
 ```
-mkdir -p ~/.local/bin
 cp claude_cleaner.py ~/.local/bin/claude-cleaner
 ```
 
