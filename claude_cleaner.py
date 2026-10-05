@@ -24,7 +24,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Optional
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 
 @dataclass
@@ -97,13 +97,15 @@ def parse_session(jsonl_path: Path, project_dir: Path) -> Optional[SessionInfo]:
 
     session_id = jsonl_path.stem
     cwd = None
+    custom_title = None
     ai_title = None
     fallback_title = None
 
     try:
         with jsonl_path.open("r", errors="replace") as f:
             for raw in f:
-                if cwd is not None and fallback_title is not None and '"aiTitle"' not in raw:
+                if (cwd is not None and fallback_title is not None
+                        and '"aiTitle"' not in raw and '"customTitle"' not in raw):
                     continue
                 raw = raw.strip()
                 if not raw:
@@ -117,7 +119,11 @@ def parse_session(jsonl_path: Path, project_dir: Path) -> Optional[SessionInfo]:
                     if c:
                         cwd = c
                 t = d.get("type")
-                if t == "ai-title":
+                if t == "custom-title":
+                    ct = d.get("customTitle")
+                    if ct:
+                        custom_title = ct
+                elif t == "ai-title":
                     at = d.get("aiTitle")
                     if at:
                         ai_title = at
@@ -128,7 +134,8 @@ def parse_session(jsonl_path: Path, project_dir: Path) -> Optional[SessionInfo]:
     except OSError:
         return None
 
-    title = ai_title or fallback_title or "(empty conversation)"
+    # a /rename sets customTitle, which /resume shows in place of the ai title.
+    title = custom_title or ai_title or fallback_title or "(empty conversation)"
     project = cwd or decode_project_fallback(project_dir.name)
 
     extra_dir = project_dir / session_id

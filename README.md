@@ -1,7 +1,7 @@
 # claude-cleaner
 
-> As of Claude Code `2.1.212` (2026-07-17), the native CLI still has no
-> built-in way to delete conversations — hence this tool. Courtesy of Sonnet 5 high effort.
+> As of Claude Code `2.1.289` (2026-10-05), the native CLI still has no
+> built-in way to delete conversations — hence this tool. Courtesy of Opus 5.5 high effort.
 
 A small terminal tool to list and delete Claude Code conversations — the
 sessions shown by the `/resume` command. Claude Code has no built-in way to
