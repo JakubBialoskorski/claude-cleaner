@@ -43,6 +43,25 @@ cp claude_cleaner.py ~/.local/bin/claude-cleaner
 
 Make sure `~/.local/bin` is on your `PATH`.
 
+## Update
+
+From your clone, run:
+
+```
+./update.sh
+```
+
+It fetches the latest `master` from GitHub, whatever branch your clone is on,
+and updates every `claude-cleaner` it finds on your `PATH` or in the install
+locations above. Works on macOS and Linux with plain
+`sh`, no bash needed. If nothing is installed yet, it installs to
+`/usr/local/bin` on macOS or `~/.local/bin` on Linux. Pass paths to update
+specific copies instead: `./update.sh ~/bin/claude-cleaner`.
+
+Privileges are only raised for locations you can't write to, using `sudo` or
+`doas`, whichever is found first. Pick one explicitly with
+`SUDO=doas ./update.sh`.
+
 ## What gets deleted
 
 For each marked conversation, its `.jsonl` session file is removed, along
