@@ -11,20 +11,24 @@ Keys in the list view:
     a              toggle mark on all currently visible rows
     /              filter by project or title (Enter to apply, Esc to clear)
     s              cycle sort: date added -> a-z -> z-a
-    d, enter       delete marked conversations (asks for confirmation)
+    enter          open conversation in claude (--resume) from its project dir
+    d              delete marked conversations (asks for confirmation)
     q              quit without changing anything
 """
 
 import argparse
 import curses
 import json
+import os
 import shutil
+import signal
+import subprocess
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Optional
 
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 
 
 @dataclass
@@ -178,6 +182,25 @@ def delete_session(info: SessionInfo) -> None:
         shutil.rmtree(info.extra_dir, ignore_errors=True)
 
 
+def resume_session(info: SessionInfo) -> Optional[str]:
+    """Run `claude --resume` in the conversation's project dir; return an error message on failure."""
+    if shutil.which("claude") is None:
+        return "claude not found on PATH"
+    # --resume looks the session up by the directory it is started from.
+    if not os.path.isdir(info.project):
+        return f"project dir missing: {info.project}"
+    # a no-op handler (unlike SIG_IGN) is reset on exec, so claude still gets Ctrl-C
+    # while this process survives it.
+    prev = signal.signal(signal.SIGINT, lambda *_: None)
+    try:
+        subprocess.run(["claude", "--resume", info.session_id], cwd=info.project)
+    except OSError as e:
+        return f"failed to start claude: {e}"
+    finally:
+        signal.signal(signal.SIGINT, prev)
+    return None
+
+
 # ---------------------------------------------------------------------------
 # Interactive UI
 # ---------------------------------------------------------------------------
@@ -213,6 +236,7 @@ def run_ui(stdscr, sessions: List[SessionInfo]) -> List[SessionInfo]:
     sort_modes = ["date", "alpha", "alpha_rev"]
     sort_labels = {"date": "date", "alpha": "a-z", "alpha_rev": "z-a"}
     sort_mode = "date"
+    status = ""  # one-shot message shown in the footer until the next key
 
     def visible_indices():
         if not query:
@@ -293,8 +317,10 @@ def run_ui(stdscr, sessions: List[SessionInfo]) -> List[SessionInfo]:
 
         if mode == "filter":
             footer = f" filter: {query}_"
+        elif status:
+            footer = f" {status}"
         else:
-            footer = " space:mark  a:all  /:filter  s:sort  d:delete  q:quit"
+            footer = " enter:open  space:mark  a:all  /:filter  s:sort  d:delete  q:quit"
         footer_attr = (curses.color_pair(5) | curses.A_DIM) if has_color else curses.A_DIM
         # writing into the terminal's bottom-right cell raises curses.error, so
         # stay one column short of the full width on the last line.
@@ -325,6 +351,7 @@ def run_ui(stdscr, sessions: List[SessionInfo]) -> List[SessionInfo]:
 
         stdscr.refresh()
         key = stdscr.getch()
+        status = ""
 
         if mode == "filter":
             if key in (10, 13):
@@ -373,7 +400,31 @@ def run_ui(stdscr, sessions: List[SessionInfo]) -> List[SessionInfo]:
                     if sessions[i].session_id == current_id:
                         cursor = pos
                         break
-        elif key in (10, 13, ord("d")):
+        elif key in (10, 13, curses.KEY_ENTER):
+            if indices:
+                current = sessions[indices[cursor]]
+                curses.def_prog_mode()
+                curses.endwin()
+                error = resume_session(current)
+                curses.reset_prog_mode()
+                curses.curs_set(0)
+                stdscr.refresh()
+                if error:
+                    status = error
+                else:
+                    # resuming appends to the session file, so refresh its entry and
+                    # keep sessions newest-first; selected holds indices, so remap it.
+                    fresh = parse_session(current.file_path, current.file_path.parent)
+                    if fresh is not None:
+                        marked_ids = {sessions[i].session_id for i in selected}
+                        sessions[sessions.index(current)] = fresh
+                        sessions.sort(key=lambda s: s.mtime, reverse=True)
+                        selected = {i for i, s in enumerate(sessions) if s.session_id in marked_ids}
+                        for pos, i in enumerate(visible_indices()):
+                            if sessions[i].session_id == fresh.session_id:
+                                cursor = pos
+                                break
+        elif key == ord("d"):
             if selected:
                 mode = "confirm"
         elif key == ord("q"):
