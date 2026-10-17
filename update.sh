@@ -1,6 +1,7 @@
 #!/bin/sh
-# Install claude-cleaner from the latest origin/master over the system-wide
-# copies, whatever branch this clone has checked out.
+# Install claude-cleaner from the latest GitHub release (v* tag) over the
+# system-wide copies, whatever branch this clone has checked out. Falls back to
+# origin/master if no release exists.
 #
 # Usage: ./update.sh [TARGET...]
 #   Without TARGET, every claude-cleaner found on PATH or in the README install
@@ -103,13 +104,18 @@ install_one() {
 }
 
 echo "System: $(detect_os)"
-git -C "$repo" fetch --quiet origin master
+git -C "$repo" fetch --quiet --tags origin master
+ref="$(git -C "$repo" tag -l 'v*' --sort=-v:refname | head -n 1)"
+if [ -z "$ref" ]; then
+    echo "No release found, using origin/master"
+    ref="origin/master"
+fi
 src="$(mktemp)"
 # only ever remove the regular file mktemp just created.
 trap 'if [ -n "${src:-}" ] && [ -f "$src" ]; then rm -f -- "$src"; fi' EXIT
 trap 'exit 130' INT TERM
-git -C "$repo" show origin/master:claude_cleaner.py > "$src"
-echo "Source: origin/master @ $(git -C "$repo" rev-parse --short origin/master)"
+git -C "$repo" show "$ref:claude_cleaner.py" > "$src"
+echo "Source: $ref @ $(git -C "$repo" rev-parse --short "$ref^{commit}")"
 
 if [ $# -gt 0 ]; then
     targets="$(printf '%s\n' "$@")"

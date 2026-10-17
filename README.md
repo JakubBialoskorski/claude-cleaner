@@ -55,7 +55,7 @@ From your clone, run:
 ./update.sh
 ```
 
-It fetches the latest `master` from GitHub, whatever branch your clone is on,
+It fetches the latest release from GitHub, whatever branch your clone is on,
 and updates every `claude-cleaner` it finds on your `PATH` or in the install
 locations above. Works on macOS and Linux with plain
 `sh`, no bash needed. If nothing is installed yet, it installs to
@@ -65,6 +65,9 @@ specific copies instead: `./update.sh ~/bin/claude-cleaner`.
 Privileges are only raised for locations you can't write to, using `sudo` or
 `doas`, whichever is found first. Pick one explicitly with
 `SUDO=doas ./update.sh`.
+
+New versions and their changes are listed under
+[Releases](https://github.com/JakubBialoskorski/claude-cleaner/releases).
 
 ## What gets deleted
 

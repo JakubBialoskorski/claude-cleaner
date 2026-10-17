@@ -1,0 +1,41 @@
+name: release
+
+# Publish a GitHub release whenever __version__ in claude_cleaner.py reaches
+# master with a version that has no tag yet.
+on:
+  push:
+    branches: [master]
+    paths: [claude_cleaner.py]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: version
+        run: |
+          ver="$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' claude_cleaner.py)"
+          if [ -z "$ver" ]; then
+            echo "No __version__ found in claude_cleaner.py" >&2
+            exit 1
+          fi
+          echo "tag=v$ver" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --tags origin "refs/tags/v$ver" >/dev/null; then
+            echo "v$ver already released, nothing to do"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.version.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          generate_release_notes: true
