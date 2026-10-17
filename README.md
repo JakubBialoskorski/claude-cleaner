@@ -1,6 +1,6 @@
 # claude-cleaner
 
-> As of Claude Code `2.1.289` (2026-10-05), the native CLI still has no
+> As of Claude Code `2.1.302` (2026-10-17), the native CLI still has no
 > built-in way to delete conversations — hence this tool. Courtesy of Opus 5.5 high effort.
 
 A small terminal tool to list and delete Claude Code conversations — the
@@ -10,6 +10,10 @@ clean these up, so this fills the gap with an interactive checklist UI.
 It scans `~/.claude/projects/*/*.jsonl` across all your projects, shows each
 conversation's project, title, last-modified time, and disk size, and lets
 you mark any number of them for deletion before confirming.
+
+Not sure what a conversation was about? Press Enter on it to open it with
+`claude --resume` from its own project directory; quitting Claude brings you
+back to the list. Resuming appends to the conversation, so its date updates.
 
 Pure Python standard library — no dependencies to install.
 
